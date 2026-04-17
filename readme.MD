@@ -22,7 +22,7 @@ eksctl create iamserviceaccount \
 --cluster=roboshop \
 --namespace=kube-system \
 --name=aws-load-balancer-controller \
---attach-policy-arn=arn:aws:iam::<AWS_ACCOUNT_ID>:policy/AWSLoadBalancerControllerIAMPolicy \
+--attach-policy-arn=arn:aws:iam::030796672830:policy/AWSLoadBalancerControllerIAMPolicy \
 --override-existing-serviceaccounts \
 --region us-east-1 \
 --approve
