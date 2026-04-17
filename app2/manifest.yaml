@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app1
+  name: app2
   # these labels are replicaset labels
   labels:
     project: roboshop
     tier: frontend
-    component: app1
+    component: app2
 spec:
   replicas: 2
   selector:
@@ -14,29 +14,29 @@ spec:
     matchLabels:
       project: roboshop
       tier: frontend
-      component: app1
+      component: app2
   # This is pod definition, pod is subset of replicaset
   template:
     metadata:
       labels:
         project: roboshop
         tier: frontend
-        component: app1
+        component: app2
     spec:
       containers:
-      - name: app1
-        image: manikanta1808/app1:1.0.0
+      - name: app2
+        image: manikanta1808/app2:1.0.0
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: app1
+  name: app2
 spec:
   selector:
     # labels are used as selectors
     project: roboshop
     tier: frontend
-    component: app1
+    component: app2
   ports:
   - protocol: TCP
     port: 80 # servie port
@@ -45,30 +45,25 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: app1
-  annotations: # To select the external service provider, in this case it is AWS ALB
+  name: app2
+  annotations:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/certificate-arn: 'arn:aws:acm:us-east-1:030796672830:certificate/52e897ad-3839-4918-a7a6-384f52918e56'
+    alb.ingress.kubernetes.io/certificate-arn: 'arn:aws:acm:us-east-1:160885265516:certificate/b6983d9a-848d-4898-8335-81c74db10bc3'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/tags: Environment=dev,Project=roboshop
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/group.name: roboshop
+    alb.ingress.kubernetes.io/group.name: roboshop # Instead of creating separate load balancer for each ingress, we can group the ingresses and create single load balancer for all the ingresses in the group.
+
 spec:
-  ingressClassName: alb # Creating Application Load Balancer
+  ingressClassName: alb
   rules:
-  - host: "app1.dawsmani.site"
+  - host: "app2.dawsmani.site"
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: app1
+            name: app2
             port:
               number: 80
-
-# Ingress is communicating with ingress drivers. Ingress drivers are responsible for creating the load balancer and configuring the load balancer to route the traffic to the service. 
-
-# Ingress talks to ingress controller drivers, that will have service account mapped to IAM role & permission to create the resources.
-
-# If errors in creating resources, then check the drivers and events of the ingress resource.
